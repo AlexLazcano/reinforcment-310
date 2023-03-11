@@ -62,6 +62,20 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        for i in range(self.iterations):
+            new_values = util.Counter()
+            for state in self.mdp.getStates():
+                if self.mdp.isTerminal(state):
+                    new_values[state] = 0
+                else:
+                    max_q = float("-inf")
+                    for action in self.mdp.getPossibleActions(state):
+                        q = self.computeQValueFromValues(state, action)
+                        if q > max_q:
+                            max_q = q
+                    new_values[state] = max_q
+            print(new_values)
+            self.values = new_values
 
 
     def getValue(self, state):
@@ -77,7 +91,13 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        q = 0
+        for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            reward = self.mdp.getReward(state, action, nextState)
+            q += prob * (reward + self.discount * self.values[nextState])
+
+        return q
+        # util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -89,7 +109,24 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # print(state)
+        legalActions = self.mdp.getPossibleActions(state)
+        # print(legalActions)
+        if len(legalActions) == 0:
+            return None
+        
+        maxQ = float("-inf")
+        bestAction = []
+        for action in legalActions:
+            q = self.computeQValueFromValues(state, action)
+            if q > maxQ:
+                maxQ = q
+                bestAction = [action]
+            elif q == maxQ:
+                bestAction.append(action)
+        return bestAction[0]
+
+        # util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
