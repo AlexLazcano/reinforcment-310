@@ -74,7 +74,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                         if q > max_q:
                             max_q = q
                     new_values[state] = max_q
-            print(new_values)
+            # print(new_values)
             self.values = new_values
 
 
